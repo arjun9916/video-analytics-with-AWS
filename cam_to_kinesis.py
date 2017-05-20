@@ -18,8 +18,6 @@ log.basicConfig(filename='webcam.log',level=log.INFO)
 
 video_capture = cv2.VideoCapture(0)
 anterior = 0
-shopnumber = 9999
-#PartitionKey = hashlib.md5(shopnumber.encode("utf")).hexdigest()
 
 while True:
     if not video_capture.isOpened():
@@ -54,13 +52,11 @@ while True:
           print(type(b))
           img_bytes = base64.b64encode(b)
         print imgname
-        my_json_string = {'shop_number': shopnumber, 'img': img_bytes, 'time': imgtime }
-        #print my_json_string[0]['shop_number']
-        #print my_json_string
+        my_json_string = {'img': img_bytes, 'time': imgtime }
         os.remove(imgname)
         print "writing in queue now..."
         response = client.put_record(
-                        StreamName='detect_faces',
+                        StreamName='<<<YOUR STREM>>>',
                         Data=json.dumps(my_json_string),
                         PartitionKey=str(shopnumber))
         print response
@@ -81,45 +77,3 @@ while True:
 # When everything is done, release the capture
 video_capture.release()
 cv2.destroyAllWindows()
-'''
-        ############SQS send message...######
-        #response = client.send_message(
-        #QueueUrl='https://sqs.us-east-1.amazonaws.com/128230620959/first_capture',
-        #MessageBody= my_json_string
-        #)
-
-		###
-        response = client.put_record(
-          StreamName='aws_face_rek',
-          Data= json.dumps(my_json_string),
-          PartitionKey= str(shopnumber),
-          #ExplicitHashKey='string',
-          #SequenceNumberForOrdering='string'
-        )
-        print response
-        resp_status = response['ResponseMetadata']['HTTPStatusCode']
-        if resp_status == 200:
-         print "Done, the HTTPStatusCode is "+ str(resp_status) +"!!!"
-         #os.remove("data_"+ imgtime +".json")
-         print (str(dt.datetime.now()) + " seconds " + str((time.time() - start_time)))
-        else:
-         print "Issue while sending the message!!"
-         print "The HTTPStatusCode is " +resp_status
-        ShardId_str = ''
-        response = client.describe_stream(
-          StreamName='aws_face_rek',
-          Limit=123,
-          #ExclusiveStartShardId='string'
-        )
-        print response
-        response = client.get_shard_iterator(
-            StreamName='aws_face_rek',
-            ShardId='shardId-000000000000',
-            ShardIteratorType='LATEST'
-        )
-        ShardIterator_str = response['ShardIterator']
-        response = client.get_records(
-            ShardIterator= ShardIterator_str,
-            Limit=123
-        )
-'''
