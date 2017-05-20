@@ -5,7 +5,7 @@ import time
 import base64
 
 
-my_stream_name = 'detect_faces'
+my_stream_name = '<<YOUR STREAM>>'
 
 kinesis_client = boto3.client('kinesis')
 rekognition_client = boto3.client('rekognition')
@@ -30,18 +30,11 @@ while 'NextShardIterator' in record_response:
         payload = record['Data']
         payload_img = json.loads(payload)
         compare_img = payload_img['img']
-        #print compare_img
-        #payload = base64.b64decode(record['Data']['img'])
-        #payload_img = json.loads(payload)
-        #compare_img = payload['img']
         decoded_compare_img = base64.b64decode(compare_img)
-        #client = boto3.client('rekognition')
         rekognition = rekognition_client.search_faces_by_image(CollectionId = 'mycollection', Image ={ 'Bytes': decoded_compare_img})
         print (rekognition)
-        #print("Decoded payload: " + payload)
     print 'Successfully processed {} records.'.format(len(record_response['Records']))
 
-    #print record_response
 
     # wait for 5 seconds
     time.sleep(1)
