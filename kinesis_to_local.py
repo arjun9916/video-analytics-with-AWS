@@ -37,4 +37,4 @@ while 'NextShardIterator' in record_response:
 
 
     # wait for 5 seconds
-    time.sleep(1)
+    time.sleep(5)
